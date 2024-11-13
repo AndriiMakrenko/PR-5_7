@@ -1,0 +1,52 @@
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 400px;
+    margin: 10% auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .close-auth {
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  /* Ensure buttons are not displaced */
+  .button {
+    padding: 10px 20px;
+    margin: 10px;
+  }
+
+  .button-auth,
+  .button-out {
+    position: relative;
+  }
+
+  .input-error {
+    border: 2px solid red;
+  }

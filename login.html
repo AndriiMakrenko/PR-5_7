@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизація</title>
+    <link rel="stylesheet" href="css/styles2.css" />
+</head>
+<body>
+    <button id="authButton">Війти</button>
+    <span id="userNameDisplay"></span>
+    <button id="goToHomeButton">Повернутися на головну</button>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Авторизація</h2>
+            <input type="text" id="loginInput" placeholder="Введіть логін" required>
+            <button id="loginButton">Війти</button>
+            <p id="errorMessage" class="error-message"></p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
