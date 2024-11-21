@@ -1,59 +1,117 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Open modal when 'Війти' button is clicked (only if not already logged in)
-    document.getElementById('authButton').addEventListener('click', function() {
+  const authModal = document.getElementById('authModal');
+  const authButton = document.getElementById('authButton');
+  const logoutButton = document.getElementById('logoutButton');
+  const closeAuthButton = document.getElementById('closeAuth');
+  const logInForm = document.getElementById('logInForm');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const loginName = document.getElementById('loginName');
+  const userLogin = document.getElementById('userLogin');
+
+
+  authButton.addEventListener('click', function () {
       if (!localStorage.getItem('username')) {
-        document.getElementById('authModal').style.display = 'block';
+          authModal.style.display = 'block';
+          document.body.style.overflow = 'hidden'; 
       }
-    });
-  
-    // Close modal when close button is clicked
-    document.getElementById('closeAuth').addEventListener('click', function() {
-      document.getElementById('authModal').style.display = 'none';
-    });
-  
-    // Handle form submission
-    document.getElementById('logInForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      const username = document.getElementById('username').value;
-  
-      if (!username) {
-        document.getElementById('username').classList.add('input-error');
-        alert('Будь ласка, введіть логін!');
-        return;
-      }
-  
-      // Save login info in LocalStorage
-      localStorage.setItem('username', username);
-  
-      // Change button text and visibility after login
-      document.getElementById('authButton').style.display = 'none';
-      document.getElementById('logoutButton').style.display = 'block';
-      document.getElementById('userLogin').style.display = 'block';
-      document.getElementById('loginName').textContent = username;
-  
-      // Close modal
-      document.getElementById('authModal').style.display = 'none';
-    });
-  
-    // Handle logout
-    document.getElementById('logoutButton').addEventListener('click', function() {
-      // Clear LocalStorage
-      localStorage.removeItem('username');
-  
-      // Reset button visibility
-      document.getElementById('authButton').style.display = 'block';
-      document.getElementById('logoutButton').style.display = 'none';
-      document.getElementById('userLogin').style.display = 'none';
-    });
-  
-    // Check if user is already logged in on page load
-    const username = localStorage.getItem('username');
-    if (username) {
-      document.getElementById('authButton').style.display = 'none';
-      document.getElementById('logoutButton').style.display = 'block';
-      document.getElementById('userLogin').style.display = 'block';
-      document.getElementById('loginName').textContent = username;
-    }
   });
+
+  closeAuthButton.addEventListener('click', function () {
+      closeModal();
+  });
+
+ 
+  window.addEventListener('click', function (event) {
+      if (event.target === authModal) {
+          closeModal();
+      }
+  });
+
   
+  function closeModal() {
+      authModal.style.display = 'none';
+      document.body.style.overflow = ''; 
+      resetInputStyles(); 
+      resetInputFields(); 
+  }
+
+ 
+  logInForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      let hasError = false;
+
+      
+      if (usernameInput.value.length < 4 || usernameInput.value.length > 16) {
+          usernameInput.style.borderColor = 'red'; 
+          usernameInput.setCustomValidity('Будь ласка, введіть логін від 4 до 16 символів.');
+          hasError = true;
+      } else {
+          usernameInput.style.borderColor = '';
+          usernameInput.setCustomValidity('');
+      }
+
+
+      if (passwordInput.value.length < 6 || passwordInput.value.length > 20) {
+          passwordInput.style.borderColor = 'red'; 
+          passwordInput.setCustomValidity('Пароль повинен бути від 6 до 20 символів.');
+          hasError = true;
+      } else {
+          passwordInput.style.borderColor = ''; 
+          passwordInput.setCustomValidity('');
+      }
+
+      if (hasError) {
+          return; 
+      }
+
+     
+      localStorage.setItem('username', usernameInput.value);
+
+
+      authButton.style.display = 'none';
+      logoutButton.style.display = 'block';
+      userLogin.style.display = 'block';
+      loginName.textContent = usernameInput.value;
+
+      closeModal();
+  });
+
+
+  logoutButton.addEventListener('click', function () {
+      localStorage.removeItem('username');
+      authButton.style.display = 'block';
+      logoutButton.style.display = 'none';
+      userLogin.style.display = 'none';
+  });
+
+
+  const username = localStorage.getItem('username');
+  if (username) {
+      authButton.style.display = 'none';
+      logoutButton.style.display = 'block';
+      userLogin.style.display = 'block';
+      loginName.textContent = username;
+  }
+
+
+  usernameInput.addEventListener('input', function () {
+      usernameInput.style.borderColor = '';
+  });
+
+  passwordInput.addEventListener('input', function () {
+      passwordInput.style.borderColor = '';
+  });
+
+  function resetInputStyles() {
+      usernameInput.style.borderColor = '';
+      passwordInput.style.borderColor = '';
+  }
+
+  
+  function resetInputFields() {
+      usernameInput.value = ''; 
+      passwordInput.value = ''; 
+  }
+});

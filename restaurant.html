@@ -34,18 +34,46 @@
 			</header>
 		
 			<!-- Modal Auth -->
-			<div class="modal modal-auth" id="authModal">
-			  <div class="modal-dialog modal-dialog-auth">
-				<button class="close-auth" id="closeAuth">&times;</button>
-				<form id="logInForm">
-				  <fieldset class="modal-body">
-					<legend class="modal-title">Авторизація</legend>
-					<input type="text" id="username" placeholder="Логін" required />
-					<button type="submit" class="button button-primary">Увійти</button>
-				  </fieldset>
-				</form>
-			  </div>
-			</div>
+<div class="modal modal-auth" id="authModal">
+	<div class="modal-dialog modal-dialog-auth">
+	  <button class="close-auth" id="closeAuth">&times;</button>
+	  <form id="logInForm">
+		<fieldset class="modal-body">
+		  <legend class="modal-title">Авторизація</legend>
+		  
+		  <!-- Поле логіна -->
+		  <label for="username">Логін:</label>
+		  <input 
+			type="text" 
+			id="username" 
+			name="username" 
+			placeholder="Введіть ваш логін" 
+			required 
+			minlength="4" 
+			maxlength="16" 
+			size="20" 
+			autocomplete="username" 
+		  />
+		  
+		  <!-- Поле пароля -->
+		  <label for="password">Пароль (8-20 символів):</label>
+		  <input 
+			type="password" 
+			id="password" 
+			name="password" 
+			placeholder="Введіть ваш пароль" 
+			required 
+			minlength="8" 
+			maxlength="20" 
+			size="20" 
+			autocomplete="current-password" 
+		  />
+		  
+		  <button type="submit" class="button button-primary">Увійти</button>
+		</fieldset>
+	  </form>	  
+	</div>
+  </div>
 	<!-- /.container  -->
 
 	<main class="main">
