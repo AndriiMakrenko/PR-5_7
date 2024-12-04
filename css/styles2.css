@@ -118,6 +118,11 @@ input:focus:invalid {
   transition: background-position 0.5s ease;
 }
 
+.promo-title,
+.promo-text {
+  margin-left: 40px; /* Adds left margin to move text to the right */
+}
+
 .promo-title {
   font-size: 2rem; 
   margin-bottom: 10px;
