@@ -215,7 +215,8 @@ button {
 .section-heading {
     display: flex;
     align-items: center;
-    margin-bottom: 44px;
+    margin-bottom: 20px;
+    margin-top: 44px;
 }
 
 .section-title {
