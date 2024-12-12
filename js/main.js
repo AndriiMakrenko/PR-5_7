@@ -1,282 +1,242 @@
 document.addEventListener('DOMContentLoaded', function () {
-        const restaurantsData = [
-            {
-                image: 'img/pizza-plus/preview.jpg',
-                name: 'Піца плюс',
-                deliveryTime: '50 хвилин',
-                rating: 4.5,
-                price: 'від 200 ₴',
-                category: 'Піца',
-                link: 'restaurant.html', 
-            },
-            {
-                image: 'img/tanuki/preview.jpg',
-                name: 'Танукі',
-                deliveryTime: '60 хвилин',
-                rating: 4.5,
-                price: 'від 1200 ₴',
-                category: 'Суші, роли',
-                link: 'restaurant.html', 
-            },
-            {
-                image: 'img/food-band/preview.jpg',
-                name: 'FoodBand',
-                deliveryTime: '40 хвилин',
-                rating: 4.5,
-                price: 'від 150 ₴',
-                category: 'Піца',
-                link: 'restaurant.html', 
-            },
-            {
-                image: 'img/palki-skalki/preview.jpg',
-                name: 'Ikigai',
-                deliveryTime: '55 хвилин',
-                rating: 4.5,
-                price: 'від 250 ₴',
-                category: 'Піца',
-                link: 'restaurant.html', 
-            },
-            {
-                image: 'img/gusi-lebedi/preview.jpg',
-                name: 'Пузата хата',
-                deliveryTime: '75 хвилин',
-                rating: 4.5,
-                price: 'від 300 ₴',
-                category: 'Українські страви',
-                link: 'restaurant.html', 
-            },
-            {
-                image: 'img/pizza-burger/preview.jpg',
-                name: 'PizzaBurger',
-                deliveryTime: '45 хвилин',
-                rating: 4.5,
-                price: 'від 700 ₴',
-                category: 'Піца',
-                link: 'restaurant.html', 
-            },
-        ];
+
+    fetch('db/partners.json')
+        .then(response => response.json())
+        .then(restaurantsData => {
+            const restaurantsContainer = document.getElementById('restaurantsContainer');
+            const menuContainer = document.getElementById('menuContainer');
+            const restaurantTitle = document.querySelector('.restaurant-title');
+            const restaurantInfo = document.querySelector('.restaurant-info'); 
     
-        const menuData = [
-            {
-                image: 'img/pizza-plus/pizza-vesuvius.jpg',
-                title: 'Піца Везувій',
-                ingredients: 'Соус томатний, сир «Моцарелла», шинка, пепероні, перець «Халапіння», соус «Тобаско», томати.',
-                price: 545,
-                link: '#'
-            },
-            {
-                image: 'img/pizza-plus/pizza-girls.jpg',
-                title: 'Піца BBQ',
-                ingredients: 'Соус томатний, пісне тісто, нежирний сир, кукурудза, цибуля, маслини, гриби, помідори, болгарський перець',
-                price: 150,
-                link: '#'
-            },
-            {
-                image: 'img/pizza-plus/pizza-oleole.jpg',
-                title: 'Піца Оле-Оле',
-                ingredients: 'Соус томатний, сир «Моцарелла», черрі, маслини, зелень, майонез',
-                price: 440,
-                link: '#'
-            },
-            {
-                image: 'img/pizza-plus/pizza-plus.jpg',
-                title: 'Піца Плюс',
-                ingredients: 'Соус томатний, сир «Моцарелла», сир «Чеддер», томат, пепероні, телятина, гриби, бекон, болгарський перець.',
-                price: 405,
-                link: '#'
-            },
-            {
-                image: 'img/pizza-plus/pizza-hawaiian.jpg',
-                title: 'Піца Гавайська',
-                ingredients: 'Соус томатний, сир «Моцарелла», шинка, ананаси',
-                price: 340,
-                link: '#'
-            },
-            {
-                image: 'img/pizza-plus/pizza-classic.jpg',
-                title: 'Піца Класика',
-                ingredients: 'Соус томатний, сир «Моцарелла», сир «Пармезан», шинка, салямі, гриби.',
-                price: 310,
-                link: '#'
+            const authModal = document.getElementById('authModal');
+            const authButton = document.getElementById('authButton');
+            const logoutButton = document.getElementById('logoutButton');
+            const closeAuthButton = document.getElementById('closeAuth');
+            const logInForm = document.getElementById('logInForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginName = document.getElementById('loginName');
+            const userLogin = document.getElementById('userLogin');
+    
+        
+            function showAuthModal() {
+                resetInputFields();
+                authModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
             }
-        ];
     
-        const restaurantsContainer = document.getElementById('restaurantsContainer');
-    const menuContainer = document.getElementById('menuContainer');
-    const authModal = document.getElementById('authModal');
-    const authButton = document.getElementById('authButton');
-    const logoutButton = document.getElementById('logoutButton');
-    const closeAuthButton = document.getElementById('closeAuth');
-    const logInForm = document.getElementById('logInForm');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginName = document.getElementById('loginName');
-    const userLogin = document.getElementById('userLogin');
-
-    function showAuthModal() {
-        resetInputFields(); 
-        authModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        authModal.style.display = 'none';
-        document.body.style.overflow = '';
-        resetInputStyles();
-        resetInputFields();
-    }
-
-    function renderRestaurants() {
-        if (!restaurantsContainer) {
-            console.error('restaurantsContainer не найден!');
-            return;
-        }
-
-        restaurantsContainer.innerHTML = '';
-        restaurantsData.forEach((restaurant) => {
-            const restaurantCard = `
-                <div class="card" data-link="${restaurant.link}">
-                    <img src="${restaurant.image}" alt="${restaurant.name}" class="card-image" />
-                    <div class="card-text">
-                        <div class="card-heading">
-                            <h3 class="card-title">${restaurant.name}</h3>
-                        </div>
-                        <div class="card-info">
-                            <div>${restaurant.deliveryTime}</div>
-                            <div>${restaurant.rating} ★</div>
-                            <div>${restaurant.price}</div>
-                            <div>${restaurant.category}</div>
-                        </div>
-                    </div>
-                </div>`;
-            restaurantsContainer.innerHTML += restaurantCard;
-        });
-
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function (event) {
-                event.preventDefault();
+    
+            function closeModal() {
+                authModal.style.display = 'none';
+                document.body.style.overflow = '';
+                resetInputStyles();
+                resetInputFields();
+            }
+    
+           
+            function renderRestaurants() {
+                if (!restaurantsContainer) {
+                    console.error('restaurantsContainer не найден!');
+                    return;
+                }
+            
+                restaurantsContainer.innerHTML = '';
+                restaurantsData.forEach((restaurant) => {
+                    const restaurantCard = `
+                        <div class="card" data-name="${restaurant.name}" data-link="${restaurant.products}">
+                            <img src="${restaurant.image}" alt="${restaurant.name}" class="card-image" />
+                            <div class="card-text">
+                                <div class="card-heading">
+                                    <h3 class="card-title">${restaurant.name}</h3>
+                                </div>
+                                <div class="card-info">
+                                    <div class="card-info-row">
+                                        <span class="card-info-label">Час доставки:</span>
+                                        <span class="card-info-value">${restaurant.time_of_delivery} хвилин</span>
+                                    </div>
+                                    <div class="card-info-row">
+                                        <span class="card-info-label">Рейтинг:</span>
+                                        <span class="card-info-value">${restaurant.stars} ★</span>
+                                    </div>
+                                    <div class="card-info-row">
+                                        <span class="card-info-label">Ціна:</span>
+                                        <span class="card-info-value">від ${restaurant.price} ₴</span>
+                                    </div>
+                                    <div class="card-info-row">
+                                        <span class="card-info-label">Кухня:</span>
+                                        <span class="card-info-value">${restaurant.kitchen}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    restaurantsContainer.innerHTML += restaurantCard;
+                });
+            
+                document.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener('click', function () {
+                        if (!localStorage.getItem('username')) {
+                            showAuthModal(); 
+                        } else {
+                            const restaurantName = card.dataset.name;
+                            localStorage.setItem('selectedRestaurant', restaurantName); 
+                            window.location.href = "restaurant.html";  
+                        }
+                    });
+                });
+            }
+            
+              
+            function renderMenu() {
+                if (!menuContainer) {
+                    console.error('menuContainer не найден!');
+                    return;
+                }
+    
+               
+                const restaurantName = localStorage.getItem('selectedRestaurant');
+                if (restaurantName && restaurantTitle) {
+                    restaurantTitle.textContent = restaurantName;  
+                }
+    
+                
+                const restaurant = restaurantsData.find(r => r.name === restaurantName);
+                if (restaurant) {
+                
+                    if (restaurantInfo) {
+                        restaurantInfo.innerHTML = `
+                            <div><strong>Час доставки:</strong> ${restaurant.time_of_delivery} хвилин</div>
+                            <div><strong>Ціна:</strong> від ${restaurant.price} ₴</div>
+                            <div><strong>Категорія:</strong> ${restaurant.kitchen}</div>
+                        `;
+                    }
+    
+                    const menuFile = restaurant.products;
+                    if (menuFile) {
+                        fetch(menuFile)
+                            .then(response => response.json())
+                            .then(menuData => {
+                                menuContainer.innerHTML = '';
+                                menuData.forEach(item => {
+                                    const menuCard = `
+                                        <div class="card">
+                                            <img src="${item.image}" alt="${item.name}" class="card-image" />
+                                            <div class="card-text">
+                                                <div class="card-heading">
+                                                    <h3 class="card-title">${item.name}</h3>  <!-- Название блюда -->
+                                                </div>
+                                                <div class="card-info">
+                                                    <div class="ingredients">${item.description}</div>  <!-- Описание блюда -->
+                                                </div>
+                                                <div class="card-buttons">
+                                                    <button class="button button-primary button-add-cart">
+                                                        <span class="button-card-text">У кошик</span>
+                                                    </button>
+                                                    <strong class="card-price-bold">${item.price} ₴</strong>  <!-- Цена -->
+                                                </div>
+                                            </div>
+                                        </div>`;
+                                    menuContainer.innerHTML += menuCard;
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Ошибка загрузки меню:', error);
+                            });
+                    }
+                }
+            }
+    
+           
+            function resetInputStyles() {
+                usernameInput.style.borderColor = '';
+                passwordInput.style.borderColor = '';
+            }
+    
+          
+            function resetInputFields() {
+                usernameInput.value = '';
+                passwordInput.value = '';
+            }
+    
+           
+            authButton.addEventListener('click', function () {
                 if (!localStorage.getItem('username')) {
                     showAuthModal();
-                } else {
-                    window.location.href = card.dataset.link;
                 }
             });
-        });
-    }
-
-    function renderMenu() {
-        if (!menuContainer) {
-            console.error('menuContainer не найден!');
-            return;
-        }
-
-        menuContainer.innerHTML = '';
-        menuData.forEach((item) => {
-            const menuCard = `
-                <div class="card" data-link="${item.link}">
-                    <img src="${item.image}" alt="${item.title}" class="card-image" />
-                    <div class="card-text">
-                        <div class="card-heading">
-                            <h3 class="card-title">${item.title}</h3>
-                        </div>
-                        <div class="card-info">
-                            <div class="ingredients">${item.ingredients}</div>
-                        </div>
-                        <div class="card-buttons">
-                            <button class="button button-primary button-add-cart">
-                                <span class="button-card-text">У кошик</span>
-                            </button>
-                            <strong class="card-price-bold">${item.price} ₴</strong>
-                        </div>
-                    </div>
-                </div>`;
-            menuContainer.innerHTML += menuCard;
-        });
-
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function (event) {
+    
+            
+            closeAuthButton.addEventListener('click', closeModal);
+    
+          
+            window.addEventListener('click', function (event) {
+                if (event.target === authModal) {
+                    closeModal();
+                }
+            });
+    
+    
+            logInForm.addEventListener('submit', function (event) {
                 event.preventDefault();
-                if (!localStorage.getItem('username')) {
-                    showAuthModal();
+    
+                let hasError = false;
+    
+           
+                if (usernameInput.value.length < 4 || usernameInput.value.length > 16) {
+                    usernameInput.style.borderColor = 'red';
+                    hasError = true;
                 } else {
-                    window.location.href = card.dataset.link;
+                    usernameInput.style.borderColor = '';
                 }
+    
+                if (passwordInput.value.length < 6 || passwordInput.value.length > 20) {
+                    passwordInput.style.borderColor = 'red';
+                    hasError = true;
+                } else {
+                    passwordInput.style.borderColor = '';
+                }
+    
+                if (hasError) {
+                    return;
+                }
+    
+                
+                localStorage.setItem('username', usernameInput.value);
+    
+                
+                authButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+                userLogin.style.display = 'block';
+                loginName.textContent = usernameInput.value;
+    
+                closeModal();
             });
+    
+     
+            logoutButton.addEventListener('click', function () {
+                localStorage.removeItem('username');
+                authButton.style.display = 'block';
+                logoutButton.style.display = 'none';
+                userLogin.style.display = 'none';
+            });
+    
+          
+            const username = localStorage.getItem('username');
+            if (username) {
+                authButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+                userLogin.style.display = 'block';
+                loginName.textContent = username;
+            }
+    
+           
+            renderRestaurants();
+    
+          
+            if (window.location.pathname.includes("restaurant.html")) {
+                renderMenu();
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при загрузке данных ресторанов:', error);
         });
-    }
-
-    authButton.addEventListener('click', function () {
-        if (!localStorage.getItem('username')) {
-            showAuthModal();
-        }
-    });
-
-    closeAuthButton.addEventListener('click', closeModal);
-
-    window.addEventListener('click', function (event) {
-        if (event.target === authModal) {
-            closeModal();
-        }
-    });
-
-    logInForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        let hasError = false;
-
-        if (usernameInput.value.length < 4 || usernameInput.value.length > 16) {
-            usernameInput.style.borderColor = 'red';
-            hasError = true;
-        } else {
-            usernameInput.style.borderColor = '';
-        }
-
-        if (passwordInput.value.length < 6 || passwordInput.value.length > 20) {
-            passwordInput.style.borderColor = 'red';
-            hasError = true;
-        } else {
-            passwordInput.style.borderColor = '';
-        }
-
-        if (hasError) {
-            return;
-        }
-
-        localStorage.setItem('username', usernameInput.value);
-
-        authButton.style.display = 'none';
-        logoutButton.style.display = 'block';
-        userLogin.style.display = 'block';
-        loginName.textContent = usernameInput.value;
-
-        closeModal();
-    });
-
-    logoutButton.addEventListener('click', function () {
-        localStorage.removeItem('username');
-        authButton.style.display = 'block';
-        logoutButton.style.display = 'none';
-        userLogin.style.display = 'none';
-    });
-
-    const username = localStorage.getItem('username');
-    if (username) {
-        authButton.style.display = 'none';
-        logoutButton.style.display = 'block';
-        userLogin.style.display = 'block';
-        loginName.textContent = username;
-    }
-
-    function resetInputStyles() {
-        usernameInput.style.borderColor = '';
-        passwordInput.style.borderColor = '';
-    }
-
-    function resetInputFields() {
-        usernameInput.value = '';
-        passwordInput.value = '';
-    }
-
-    renderRestaurants();
-    renderMenu();
 });

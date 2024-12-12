@@ -184,4 +184,142 @@ input:focus:invalid {
 
 
 
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  overflow: hidden;
+  background-color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+
+.card-text {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9; 
+  border-top: 2px solid #ddd; 
+}
+
+
+.card-heading {
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 1.4rem; 
+  font-weight: bold;
+  color: #333;
+  transition: color 0.3s ease; 
+}
+
+.card-heading:hover {
+  color: #ff6347; 
+}
+
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-info-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.card-info-value {
+  color: #555;
+  margin-left: 10px;
+}
+
+
+.card:hover .card-heading {
+  color: #ff6347; 
+}
+
+.card-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.button-add-cart {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-add-cart:hover {
+  background-color: #218838;
+}
+
+.restaurant-info {
+  background-color: #f9f9f9; 
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  margin-bottom: 20px; 
+  font-family: 'Arial', sans-serif; 
+}
+
+.restaurant-info div {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6; 
+  margin-bottom: 10px; 
+}
+
+.restaurant-info strong {
+  color: #007BFF; 
+}
+
+.restaurant-info div:last-child {
+  margin-bottom: 0; 
+}
+
+
+.restaurant-info:hover {
+  background-color: #e9e9e9; 
+  transform: translateY(-5px); 
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+/* Стилизация заголовка */
+.restaurant-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+
+
+
 
