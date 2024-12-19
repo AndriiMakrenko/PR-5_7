@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     fetch('db/partners.json')
         .then(response => response.json())
         .then(restaurantsData => {
             const restaurantsContainer = document.getElementById('restaurantsContainer');
             const menuContainer = document.getElementById('menuContainer');
             const restaurantTitle = document.querySelector('.restaurant-title');
-            const restaurantInfo = document.querySelector('.restaurant-info'); 
-    
+            const restaurantInfo = document.querySelector('.restaurant-info');
+            const searchInput = document.querySelector('.input-search');
+            const clearSearchButton = document.getElementById('clearSearch');
+            
             const authModal = document.getElementById('authModal');
             const authButton = document.getElementById('authButton');
             const logoutButton = document.getElementById('logoutButton');
@@ -17,31 +18,27 @@ document.addEventListener('DOMContentLoaded', function () {
             const passwordInput = document.getElementById('password');
             const loginName = document.getElementById('loginName');
             const userLogin = document.getElementById('userLogin');
-    
-        
-            function showAuthModal() {
-                resetInputFields();
-                authModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-    
-    
+
             function closeModal() {
                 authModal.style.display = 'none';
                 document.body.style.overflow = '';
                 resetInputStyles();
                 resetInputFields();
             }
-    
-           
-            function renderRestaurants() {
+
+            function showAuthModal() {
+                authModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function renderRestaurants(filteredData = restaurantsData) {
                 if (!restaurantsContainer) {
                     console.error('restaurantsContainer не найден!');
                     return;
                 }
             
                 restaurantsContainer.innerHTML = '';
-                restaurantsData.forEach((restaurant) => {
+                filteredData.forEach((restaurant) => {
                     const restaurantCard = `
                         <div class="card" data-name="${restaurant.name}" data-link="${restaurant.products}">
                             <img src="${restaurant.image}" alt="${restaurant.name}" class="card-image" />
@@ -84,24 +81,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 });
             }
-            
-              
+
             function renderMenu() {
                 if (!menuContainer) {
                     console.error('menuContainer не найден!');
                     return;
                 }
-    
-               
+
                 const restaurantName = localStorage.getItem('selectedRestaurant');
                 if (restaurantName && restaurantTitle) {
                     restaurantTitle.textContent = restaurantName;  
                 }
     
-                
                 const restaurant = restaurantsData.find(r => r.name === restaurantName);
                 if (restaurant) {
-                
                     if (restaurantInfo) {
                         restaurantInfo.innerHTML = `
                             <div><strong>Час доставки:</strong> ${restaurant.time_of_delivery} хвилин</div>
@@ -122,16 +115,16 @@ document.addEventListener('DOMContentLoaded', function () {
                                             <img src="${item.image}" alt="${item.name}" class="card-image" />
                                             <div class="card-text">
                                                 <div class="card-heading">
-                                                    <h3 class="card-title">${item.name}</h3>  <!-- Название блюда -->
+                                                    <h3 class="card-title">${item.name}</h3>  
                                                 </div>
                                                 <div class="card-info">
-                                                    <div class="ingredients">${item.description}</div>  <!-- Описание блюда -->
+                                                    <div class="ingredients">${item.description}</div>  
                                                 </div>
                                                 <div class="card-buttons">
                                                     <button class="button button-primary button-add-cart">
                                                         <span class="button-card-text">У кошик</span>
                                                     </button>
-                                                    <strong class="card-price-bold">${item.price} ₴</strong>  <!-- Цена -->
+                                                    <strong class="card-price-bold">${item.price} ₴</strong>  
                                                 </div>
                                             </div>
                                         </div>`;
@@ -144,82 +137,145 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-    
-           
+
             function resetInputStyles() {
                 usernameInput.style.borderColor = '';
                 passwordInput.style.borderColor = '';
             }
-    
-          
+
             function resetInputFields() {
                 usernameInput.value = '';
                 passwordInput.value = '';
             }
-    
-           
-            authButton.addEventListener('click', function () {
-                if (!localStorage.getItem('username')) {
-                    showAuthModal();
-                }
-            });
-    
-            
-            closeAuthButton.addEventListener('click', closeModal);
-    
-          
+
+            function searchRestaurants(query) {
+                if (!query.trim()) return;
+
+                const filteredRestaurants = restaurantsData.filter(restaurant => {
+                    const products = Array.isArray(restaurant.products) ? restaurant.products : [];
+                    return restaurant.name.toLowerCase().includes(query.toLowerCase()) ||
+                           products.some(product => product.name.toLowerCase().includes(query.toLowerCase()));
+                });
+
+                renderRestaurants(filteredRestaurants);
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function (event) {
+                    if (event.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query === '') {
+                            searchInput.style.borderColor = 'red';
+                            searchInput.setAttribute('placeholder', 'Введіть будь ласка назву ресторану');
+                            setTimeout(() => { 
+                                searchInput.style.borderColor = ''; 
+                                searchInput.setAttribute('placeholder', 'Пошук ресторанів'); 
+                            }, 1000); 
+                        } else {
+                            searchRestaurants(query);
+                        }
+                    }
+                });
+            } else {
+                console.error('searchInput не найден!');
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('blur', function () {
+                    const query = searchInput.value.trim();
+                    if (query === '') {
+                        searchInput.style.borderColor = 'red';
+                        searchInput.setAttribute('placeholder', 'Введіть будь ласка назву ресторану');
+                    } else {
+                        searchInput.style.borderColor = '';
+                        searchInput.setAttribute('placeholder', 'Пошук ресторанів');
+                    }
+                });
+            } else {
+                console.error('searchInput не найден!');
+            }
+
+            if (clearSearchButton) {
+                clearSearchButton.addEventListener('click', function () {
+                    searchInput.value = '';
+                    searchInput.style.borderColor = '';
+                    searchInput.setAttribute('placeholder', 'Пошук ресторанів');
+                    renderRestaurants();
+                });
+            } else {
+                console.error('clearSearchButton не найден!');
+            }
+
+            if (authButton) {
+                authButton.addEventListener('click', function () {
+                    if (!localStorage.getItem('username')) {
+                        showAuthModal();
+                    }
+                });
+            } else {
+                console.error('authButton не найден!');
+            }
+
+            if (closeAuthButton) {
+                closeAuthButton.addEventListener('click', closeModal);
+            } else {
+                console.error('closeAuthButton не найден!');
+            }
+
             window.addEventListener('click', function (event) {
                 if (event.target === authModal) {
                     closeModal();
                 }
             });
-    
-    
-            logInForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-    
-                let hasError = false;
-    
-           
-                if (usernameInput.value.length < 4 || usernameInput.value.length > 16) {
-                    usernameInput.style.borderColor = 'red';
-                    hasError = true;
-                } else {
-                    usernameInput.style.borderColor = '';
-                }
-    
-                if (passwordInput.value.length < 6 || passwordInput.value.length > 20) {
-                    passwordInput.style.borderColor = 'red';
-                    hasError = true;
-                } else {
-                    passwordInput.style.borderColor = '';
-                }
-    
-                if (hasError) {
-                    return;
-                }
-    
-                
-                localStorage.setItem('username', usernameInput.value);
-    
-                
-                authButton.style.display = 'none';
-                logoutButton.style.display = 'block';
-                userLogin.style.display = 'block';
-                loginName.textContent = usernameInput.value;
-    
-                closeModal();
-            });
-    
-     
-            logoutButton.addEventListener('click', function () {
-                localStorage.removeItem('username');
-                authButton.style.display = 'block';
-                logoutButton.style.display = 'none';
-                userLogin.style.display = 'none';
-            });
-    
-          
+
+            if (logInForm) {
+                logInForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    let hasError = false;
+
+                    if (usernameInput.value.length < 4 || usernameInput.value.length > 16) {
+                        usernameInput.style.borderColor = 'red';
+                        hasError = true;
+                    } else {
+                        usernameInput.style.borderColor = '';
+                    }
+
+                    if (passwordInput.value.length < 6 || passwordInput.value.length > 20) {
+                        passwordInput.style.borderColor = 'red';
+                        hasError = true;
+                    } else {
+                        passwordInput.style.borderColor = '';
+                    }
+
+                    if (hasError) {
+                        return;
+                    }
+
+                    localStorage.setItem('username', usernameInput.value);
+
+                    authButton.style.display = 'none';
+                    logoutButton.style.display = 'block';
+                    userLogin.style.display = 'block';
+                    loginName.textContent = usernameInput.value;
+
+                    closeModal();
+                });
+            } else {
+                console.error('logInForm не найден!');
+            }
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function () {
+                    localStorage.removeItem('username');
+                    authButton.style.display = 'block';
+                    logoutButton.style.display = 'none';
+                    userLogin.style.display = 'none';
+                });
+            } else {
+                console.error('logoutButton не найден!');
+            }
+
             const username = localStorage.getItem('username');
             if (username) {
                 authButton.style.display = 'none';
@@ -227,11 +283,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 userLogin.style.display = 'block';
                 loginName.textContent = username;
             }
-    
-           
+
             renderRestaurants();
-    
-          
+
             if (window.location.pathname.includes("restaurant.html")) {
                 renderMenu();
             }
