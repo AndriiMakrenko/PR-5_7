@@ -308,7 +308,6 @@ transform: translateY(-5px);
 transition: transform 0.3s, background-color 0.3s;
 }
 
-/* Стилизация заголовка */
 .restaurant-title {
 font-size: 28px;
 font-weight: bold;
@@ -316,3 +315,77 @@ color: #333;
 margin-bottom: 20px;
 text-align: center;
 }
+
+#menuSearchInput {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+#menuSearchInput:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+#menuSearchInput::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+#menuSearchInput:invalid {
+  border-color: red;
+  background-color: #f8d7da;
+}
+
+#menuSearchInput:disabled {
+  background-color: #e9ecef;
+  border-color: #6c757d;
+}
+
+#menuSearchInput:invalid {
+  border-color: red;
+  background-color: #f8d7da;
+}
+
+#menuSearchInput:focus:invalid {
+  border-color: red;
+  background-color: #f8d7da;
+}
+
+.menu-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 200px; 
+}
+
+#menuSearchInput {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%; 
+}
+
+.clear-search-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.clear-search-button.visible {
+  visibility: visible; 
+}
+
+.clear-search-button:hover {
+  color: #f00;
+}
+

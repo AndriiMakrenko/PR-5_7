@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(restaurantsData => {
             const restaurantsContainer = document.getElementById('restaurantsContainer');
             const menuContainer = document.getElementById('menuContainer');
+            const menuSearchInput = document.getElementById('menuSearchInput');
             const restaurantTitle = document.querySelector('.restaurant-title');
             const restaurantInfo = document.querySelector('.restaurant-info');
             const searchInput = document.querySelector('.input-search');
             const clearSearchButton = document.getElementById('clearSearch');
-            
+            const clearMenuSearch = document.getElementById('clearMenuSearch');
+
             const authModal = document.getElementById('authModal');
             const authButton = document.getElementById('authButton');
             const logoutButton = document.getElementById('logoutButton');
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('restaurantsContainer не найден!');
                     return;
                 }
-            
+
                 restaurantsContainer.innerHTML = '';
                 filteredData.forEach((restaurant) => {
                     const restaurantCard = `
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>`;
                     restaurantsContainer.innerHTML += restaurantCard;
                 });
-            
+
                 document.querySelectorAll('.card').forEach(card => {
                     card.addEventListener('click', function () {
                         if (!localStorage.getItem('username')) {
@@ -82,17 +84,42 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
-            function renderMenu() {
+            function renderMenu(menuData = []) {
                 if (!menuContainer) {
                     console.error('menuContainer не найден!');
                     return;
                 }
 
+                menuContainer.innerHTML = '';
+                menuData.forEach(item => {
+                    const menuCard = `
+                        <div class="card">
+                            <img src="${item.image}" alt="${item.name}" class="card-image" />
+                            <div class="card-text">
+                                <div class="card-heading">
+                                    <h3 class="card-title">${item.name}</h3>  
+                                </div>
+                                <div class="card-info">
+                                    <div class="ingredients">${item.description}</div>  
+                                </div>
+                                <div class="card-buttons">
+                                    <button class="button button-primary button-add-cart">
+                                        <span class="button-card-text">У кошик</span>
+                                    </button>
+                                    <strong class="card-price-bold">${item.price} ₴</strong>  
+                                </div>
+                            </div>
+                        </div>`;
+                    menuContainer.innerHTML += menuCard;
+                });
+            }
+
+            function loadMenu() {
                 const restaurantName = localStorage.getItem('selectedRestaurant');
                 if (restaurantName && restaurantTitle) {
                     restaurantTitle.textContent = restaurantName;  
                 }
-    
+
                 const restaurant = restaurantsData.find(r => r.name === restaurantName);
                 if (restaurant) {
                     if (restaurantInfo) {
@@ -102,34 +129,30 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div><strong>Категорія:</strong> ${restaurant.kitchen}</div>
                         `;
                     }
-    
+
                     const menuFile = restaurant.products;
                     if (menuFile) {
                         fetch(menuFile)
                             .then(response => response.json())
                             .then(menuData => {
-                                menuContainer.innerHTML = '';
-                                menuData.forEach(item => {
-                                    const menuCard = `
-                                        <div class="card">
-                                            <img src="${item.image}" alt="${item.name}" class="card-image" />
-                                            <div class="card-text">
-                                                <div class="card-heading">
-                                                    <h3 class="card-title">${item.name}</h3>  
-                                                </div>
-                                                <div class="card-info">
-                                                    <div class="ingredients">${item.description}</div>  
-                                                </div>
-                                                <div class="card-buttons">
-                                                    <button class="button button-primary button-add-cart">
-                                                        <span class="button-card-text">У кошик</span>
-                                                    </button>
-                                                    <strong class="card-price-bold">${item.price} ₴</strong>  
-                                                </div>
-                                            </div>
-                                        </div>`;
-                                    menuContainer.innerHTML += menuCard;
-                                });
+                                renderMenu(menuData);
+
+                                if (menuSearchInput) {
+                                    menuSearchInput.addEventListener('keypress', function (event) {
+                                        if (event.key === 'Enter') {  
+                                            const query = menuSearchInput.value.trim().toLowerCase();
+                                            if (query) {
+                                                const filteredMenu = menuData.filter(item => 
+                                                    item.name.toLowerCase().includes(query) ||
+                                                    item.description.toLowerCase().includes(query)
+                                                );
+                                                renderMenu(filteredMenu); 
+                                            } else {
+                                                renderMenu(menuData);  
+                                            }
+                                        }
+                                    });
+                                }
                             })
                             .catch(error => {
                                 console.error('Ошибка загрузки меню:', error);
@@ -152,43 +175,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!query.trim()) return;
 
                 const filteredRestaurants = restaurantsData.filter(restaurant => {
-                    const products = Array.isArray(restaurant.products) ? restaurant.products : [];
-                    return restaurant.name.toLowerCase().includes(query.toLowerCase()) ||
-                           products.some(product => product.name.toLowerCase().includes(query.toLowerCase()));
+                    return restaurant.name.toLowerCase().includes(query.toLowerCase());
                 });
 
                 renderRestaurants(filteredRestaurants);
             }
 
+   
             if (searchInput) {
-                searchInput.addEventListener('keypress', function (event) {
-                    if (event.key === 'Enter') {
-                        const query = searchInput.value.trim();
-                        if (query === '') {
-                            searchInput.style.borderColor = 'red';
-                            searchInput.setAttribute('placeholder', 'Введіть будь ласка назву ресторану');
-                            setTimeout(() => { 
-                                searchInput.style.borderColor = ''; 
-                                searchInput.setAttribute('placeholder', 'Пошук ресторанів'); 
-                            }, 1000); 
-                        } else {
-                            searchRestaurants(query);
-                        }
-                    }
-                });
-            } else {
-                console.error('searchInput не найден!');
-            }
-
-            if (searchInput) {
-                searchInput.addEventListener('blur', function () {
+                searchInput.addEventListener('input', function () {
                     const query = searchInput.value.trim();
-                    if (query === '') {
+          
+                    if (query) {
+                        clearSearchButton.style.display = 'block';
+                    } else {
+                        clearSearchButton.style.display = 'none';
+                    }
+
+                    if (query === '' || /^\s*$/.test(query)) {  
                         searchInput.style.borderColor = 'red';
                         searchInput.setAttribute('placeholder', 'Введіть будь ласка назву ресторану');
+                        setTimeout(() => { 
+                            searchInput.style.borderColor = ''; 
+                            searchInput.setAttribute('placeholder', 'Пошук ресторанів'); 
+                        }, 1000); 
                     } else {
-                        searchInput.style.borderColor = '';
-                        searchInput.setAttribute('placeholder', 'Пошук ресторанів');
+                        searchRestaurants(query);
                     }
                 });
             } else {
@@ -197,13 +209,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (clearSearchButton) {
                 clearSearchButton.addEventListener('click', function () {
-                    searchInput.value = '';
-                    searchInput.style.borderColor = '';
-                    searchInput.setAttribute('placeholder', 'Пошук ресторанів');
-                    renderRestaurants();
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.style.borderColor = '';  
+                        searchInput.setAttribute('placeholder', 'Пошук ресторанів');
+                        renderRestaurants();
+                        clearSearchButton.style.display = 'none'; 
+                    }
                 });
             } else {
                 console.error('clearSearchButton не найден!');
+            }
+
+if (clearMenuSearch) {
+    clearMenuSearch.addEventListener('click', function () {
+        if (menuSearchInput) {
+            menuSearchInput.value = '';  
+            menuSearchInput.style.borderColor = '';  
+            menuSearchInput.style.backgroundColor = '';  
+
+            
+            const restaurantName = localStorage.getItem('selectedRestaurant');
+            if (restaurantName) {
+                const restaurant = restaurantsData.find(r => r.name === restaurantName);
+                if (restaurant) {
+                    const menuFile = restaurant.products;
+                    if (menuFile) {
+                        fetch(menuFile)
+                            .then(response => response.json())
+                            .then(menuData => {
+                                renderMenu(menuData);  
+                            })
+                            .catch(error => {
+                                console.error('Ошибка загрузки меню:', error);
+                            });
+                    }
+                }
+            }
+        }
+    });
+} else {
+    console.error('clearMenuSearch не найден!');
+}
+
+            
+            if (menuSearchInput) {
+                menuSearchInput.addEventListener('blur', function () {
+                    if (menuSearchInput.value.trim() === '') {
+                        menuSearchInput.style.borderColor = 'red';
+                        menuSearchInput.style.backgroundColor = '#f8d7da'; 
+                    }
+                });
+        
+                
+                menuSearchInput.addEventListener('input', function () {
+                    if (menuSearchInput.value.trim() !== '') {
+                        menuSearchInput.style.borderColor = '';
+                        menuSearchInput.style.backgroundColor = ''; 
+                    }
+                });
             }
 
             if (authButton) {
@@ -287,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
             renderRestaurants();
 
             if (window.location.pathname.includes("restaurant.html")) {
-                renderMenu();
+                loadMenu();
             }
         })
         .catch(error => {
