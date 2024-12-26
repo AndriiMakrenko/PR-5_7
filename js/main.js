@@ -89,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('menuContainer не найден!');
                     return;
                 }
-
+            
                 menuContainer.innerHTML = '';
                 menuData.forEach(item => {
                     const menuCard = `
-                        <div class="card">
+                        <div class="card" data-id="${item.id}">
                             <img src="${item.image}" alt="${item.name}" class="card-image" />
                             <div class="card-text">
                                 <div class="card-heading">
@@ -112,8 +112,39 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>`;
                     menuContainer.innerHTML += menuCard;
                 });
+            
+                document.querySelectorAll('.button-add-cart').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const card = button.closest('.card');
+                        const itemId = card.getAttribute('data-id');
+                        const itemName = card.querySelector('.card-title').textContent;
+                        const itemPrice = parseFloat(card.querySelector('.card-price-bold').textContent);
+            
+                        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                        const existingItemIndex = cart.findIndex(item => item.id === itemId);
+            
+                        if (existingItemIndex > -1) {
+                            cart[existingItemIndex].quantity += 1;
+                        } else {
+                            cart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
+                        }
+            
+                        localStorage.setItem('cart', JSON.stringify(cart));
+            
+                      
+                        button.innerHTML = '<span class="button-card-text">Додано до кошика</span>';
+                        const goToCartButton = document.createElement('button');
+                        goToCartButton.classList.add('button', 'button-primary', 'button-go-to-cart');
+                        goToCartButton.textContent = '🛒';
+                        button.parentElement.appendChild(goToCartButton);
+            
+                        goToCartButton.addEventListener('click', () => {
+                            window.location.href = 'cart.html'; 
+                        });
+                    });
+                });
             }
-
+               
             function loadMenu() {
                 const restaurantName = localStorage.getItem('selectedRestaurant');
                 if (restaurantName && restaurantTitle) {
@@ -181,7 +212,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 renderRestaurants(filteredRestaurants);
             }
 
-   
+            function sortRestaurantsByPrice() {
+                const sortedRestaurants = [...restaurantsData].sort((a, b) => a.price - b.price);
+                renderRestaurants(sortedRestaurants);
+            }
+
+            function filterRestaurantsByRating(rating) {
+                const filteredRestaurants = restaurantsData.filter(restaurant => restaurant.stars >= rating);
+                renderRestaurants(filteredRestaurants);
+            }
+
             if (searchInput) {
                 searchInput.addEventListener('input', function () {
                     const query = searchInput.value.trim();
@@ -221,38 +261,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('clearSearchButton не найден!');
             }
 
-if (clearMenuSearch) {
-    clearMenuSearch.addEventListener('click', function () {
-        if (menuSearchInput) {
-            menuSearchInput.value = '';  
-            menuSearchInput.style.borderColor = '';  
-            menuSearchInput.style.backgroundColor = '';  
+            if (clearMenuSearch) {
+                clearMenuSearch.addEventListener('click', function () {
+                    if (menuSearchInput) {
+                        menuSearchInput.value = '';  
+                        menuSearchInput.style.borderColor = '';  
+                        menuSearchInput.style.backgroundColor = '';  
 
-            
-            const restaurantName = localStorage.getItem('selectedRestaurant');
-            if (restaurantName) {
-                const restaurant = restaurantsData.find(r => r.name === restaurantName);
-                if (restaurant) {
-                    const menuFile = restaurant.products;
-                    if (menuFile) {
-                        fetch(menuFile)
-                            .then(response => response.json())
-                            .then(menuData => {
-                                renderMenu(menuData);  
-                            })
-                            .catch(error => {
-                                console.error('Ошибка загрузки меню:', error);
-                            });
+                        const restaurantName = localStorage.getItem('selectedRestaurant');
+                        if (restaurantName) {
+                            const restaurant = restaurantsData.find(r => r.name === restaurantName);
+                            if (restaurant) {
+                                const menuFile = restaurant.products;
+                                if (menuFile) {
+                                    fetch(menuFile)
+                                        .then(response => response.json())
+                                        .then(menuData => {
+                                            renderMenu(menuData);  
+                                        })
+                                        .catch(error => {
+                                            console.error('Ошибка загрузки меню:', error);
+                                        });
+                                }
+                            }
+                        }
                     }
-                }
+                });
+            } else {
+                console.error('clearMenuSearch не найден!');
             }
-        }
-    });
-} else {
-    console.error('clearMenuSearch не найден!');
-}
 
-            
             if (menuSearchInput) {
                 menuSearchInput.addEventListener('blur', function () {
                     if (menuSearchInput.value.trim() === '') {
@@ -261,7 +299,6 @@ if (clearMenuSearch) {
                     }
                 });
         
-                
                 menuSearchInput.addEventListener('input', function () {
                     if (menuSearchInput.value.trim() !== '') {
                         menuSearchInput.style.borderColor = '';

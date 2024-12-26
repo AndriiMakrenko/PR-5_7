@@ -47,7 +47,13 @@ button {
 .input-address {
     width: 100%;
     background-image: url(../img/icon/home.svg);
-}
+    background-repeat: no-repeat;
+    background-position: 2px center;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Чтобы padding учитывался в общей ширине элемента */
+  }
 
 .search {
     margin-left: auto;
@@ -318,7 +324,6 @@ button {
     font-weight: bold;
     font-size: 20px;
     line-height: 32px;
-    margin-left: 30px;
 }
 
 .rating {
@@ -373,14 +378,12 @@ button {
     margin-left: 10px;
 }
 
-.footer {
-    padding: 60px 0;
-}
 
 .footer-block {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 30px;
 }
 
 .footer-nav {
